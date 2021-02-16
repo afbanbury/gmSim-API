@@ -8,4 +8,8 @@
       <Compile Remove="Class1.cs" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="MongoDB.Bson" Version="2.12.0-beta1" />
+    </ItemGroup>
+
 </Project>

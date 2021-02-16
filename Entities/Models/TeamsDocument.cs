@@ -9,5 +9,7 @@ namespace Entities.Models
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
         public string Name { get; set; }
+        public string Conference { get; set; }
+        public string Division { get; set; }
     }
 }

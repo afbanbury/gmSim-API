@@ -1,4 +1,8 @@
-$HEADER$namespace $NAMESPACE$
+namespace gmSim_API.MongoDocuments
 {
-  public class $CLASS$ {$END$}
+    public interface IGmSimDatabaseSettings
+    {
+        string ConnectionString { get; set; }
+        string DatabaseName { get; set; } 
+    }
 }
