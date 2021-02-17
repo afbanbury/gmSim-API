@@ -25,7 +25,9 @@ namespace gmSim_API.Services
             {
                 var current = _game.Find(record => true).SingleOrDefault();
                 var filter = Builders<GameDocument>.Filter.Eq(record => record.Id, current.Id);
-                var update = Builders<GameDocument>.Update.Set(record => record.Season, newSeason);
+                var update = Builders<GameDocument>.Update.Set(record => record.Season, newSeason)
+                    .Set(record => record.Week, 1)
+                    .Set(record => record.NextWeekType, WeekType.RegularSeason);
                 var result = _game.UpdateOne(filter, update);
                 
                 return result.ModifiedCount == 1;
@@ -39,6 +41,11 @@ namespace gmSim_API.Services
                 var result = _game.UpdateOne(filter, update);
                 
                 return result.ModifiedCount == 1;
+            }
+
+            public bool NextWeek()
+            {
+                throw new System.NotImplementedException();
             }
     }
 }

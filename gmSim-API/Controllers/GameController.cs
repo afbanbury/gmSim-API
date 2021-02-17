@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Entities.Models;
 using gmSim_API.ProcessServices;
@@ -29,18 +30,29 @@ namespace gmSim_API.Controllers
         {
             return Ok(_gameService.Get());
         }
-        
-        [HttpPut( "NewSeason")]
-        public ActionResult<GameDocument> NewSeason()
+
+        [HttpPost ("NextWeek", Name ="NextWeek")]
+        public ActionResult NextWeek()
         {
-            _newSeasonProcessService.SetUpNewSeason();
-            return Ok(_gameService.Get());
-        }
-        
-        [HttpPut( "PlayWeek")]
-        public ActionResult<GameDocument> PlayWeek()
-        {
-            _playWeekProcessService.SetUpPlayWeek();
+            var current = _gameService.Get();
+
+            Console.WriteLine("Next Week Type" + current.NextWeekType);
+            switch (current.NextWeekType)
+            {
+                case WeekType.EndSeason:
+                    Console.WriteLine("Process new season");
+                    _newSeasonProcessService.SetUpNewSeason();
+                    break;
+                case WeekType.OffSeason:
+                    break;
+                case WeekType.PostSeason:
+
+                    break;
+                case WeekType.RegularSeason:
+                    _playWeekProcessService.SetUpPlayWeek();
+                    break;
+            }
+
             return Ok(_gameService.Get());
         }
     }
