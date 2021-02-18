@@ -15,14 +15,20 @@ namespace gmSim_API.Controllers
         private readonly ILogger<GameController> _logger;
         private readonly GameService _gameService;
         private readonly NewSeasonProcessService _newSeasonProcessService;
-        private readonly PlayWeekProcessService _playWeekProcessService;
+        private readonly DivisionalFinalsProcessService _divisionalFinalsProcessService;
+        private readonly RegularSeasonWeekProcessService _regularSeasonWeekProcessService;
 
-        public GameController(ILogger<GameController> logger, GameService gameService, NewSeasonProcessService newSeasonProcessService, PlayWeekProcessService playWeekProcessService)
+        public GameController(ILogger<GameController> logger, 
+            GameService gameService, 
+            NewSeasonProcessService newSeasonProcessService, 
+            DivisionalFinalsProcessService divisionalFinalsProcessService,
+            RegularSeasonWeekProcessService regularSeasonWeekProcessService)
         {
             _logger = logger;
             _gameService = gameService;
             _newSeasonProcessService = newSeasonProcessService;
-            _playWeekProcessService = playWeekProcessService;
+            _divisionalFinalsProcessService = divisionalFinalsProcessService;
+            _regularSeasonWeekProcessService = regularSeasonWeekProcessService;
         }
 
         [HttpGet]
@@ -35,21 +41,22 @@ namespace gmSim_API.Controllers
         public ActionResult NextWeek()
         {
             var current = _gameService.Get();
-
-            Console.WriteLine("Next Week Type" + current.NextWeekType);
+            
             switch (current.NextWeekType)
             {
                 case WeekType.EndSeason:
-                    Console.WriteLine("Process new season");
                     _newSeasonProcessService.SetUpNewSeason();
                     break;
                 case WeekType.OffSeason:
                     break;
-                case WeekType.PostSeason:
+                case WeekType.DivisionalFinals:
+                    _divisionalFinalsProcessService.PlayFinals();
+                    break;
+                case WeekType.Championship:
 
                     break;
                 case WeekType.RegularSeason:
-                    _playWeekProcessService.SetUpPlayWeek();
+                    _regularSeasonWeekProcessService.PlayWeek();
                     break;
             }
 

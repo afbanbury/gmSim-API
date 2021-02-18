@@ -43,7 +43,8 @@ namespace gmSim_API
             services.AddSingleton<IGmSimDatabaseSettings>(sp =>
                 sp.GetRequiredService<IOptions<GmSimDatabaseSettings>>().Value);
             services.AddSingleton<NewSeasonProcessService>();
-            services.AddSingleton<PlayWeekProcessService>();
+            services.AddSingleton<RegularSeasonWeekProcessService>();
+            services.AddSingleton<DivisionalFinalsProcessService>();
             services.AddSingleton<GameService>();
             services.AddSingleton<TeamsService>();
             services.AddSingleton<FixturesService>();

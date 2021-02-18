@@ -33,11 +33,12 @@ namespace gmSim_API.Services
                 return result.ModifiedCount == 1;
             }
             
-            public bool NewWeek(int newWeek)
+            public bool NewWeek(int newWeek, WeekType newWeekType)
             {
                 var current = _game.Find(record => true).SingleOrDefault();
                 var filter = Builders<GameDocument>.Filter.Eq(record => record.Id, current.Id);
-                var update = Builders<GameDocument>.Update.Set(record => record.Week, newWeek);
+                var update = Builders<GameDocument>.Update.Set(record => record.Week, newWeek)
+                    .Set(record => record.NextWeekType, newWeekType);
                 var result = _game.UpdateOne(filter, update);
                 
                 return result.ModifiedCount == 1;

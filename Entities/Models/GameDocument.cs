@@ -23,7 +23,8 @@ namespace Entities.Models
     public enum WeekType
     {
         RegularSeason,
-        PostSeason,
+        DivisionalFinals,
+        Championship,
         OffSeason, 
         EndSeason
     }

@@ -8,15 +8,16 @@ using Microsoft.Extensions.Logging;
 
 namespace gmSim_API.ProcessServices
 {
-    public class PlayWeekProcessService
+    public class RegularSeasonWeekProcessService
     {
         private readonly ILogger<FixturesController> _logger;
         private readonly GameService _gameService;
         private readonly FixturesService _fixturesService;
         private readonly StandingsService _standingsService;
         private readonly TeamsService _teamsService;
+        private const int RegularSeasonLength = 17;
         
-        public PlayWeekProcessService(ILogger<FixturesController> logger,
+        public RegularSeasonWeekProcessService(ILogger<FixturesController> logger,
             GameService gameService,
             FixturesService fixturesService,
             StandingsService standingsService,
@@ -29,29 +30,35 @@ namespace gmSim_API.ProcessServices
             _teamsService = teamsService;
         }
 
-        public void SetUpPlayWeek()
+        public void PlayWeek()
         {
             GameDocument game = _gameService.Get();
-            List<FixturesDocument> fixtures = _fixturesService.GetThisWeeksFixtures(game.Season, game.Week);
-
-            foreach (var fixture in fixtures)
+            
+            if (game.NextWeekType == WeekType.RegularSeason)
             {
-                PlayGame(fixture.Id);
-                UpdateResult(fixture.Id, game.Season);
-            }
+                List<FixturesDocument> fixtures = _fixturesService.GetThisWeeksFixtures(game.Season, game.Week);
 
-            UpdateDivisionRankings();
-            UpdateScheduleStrength();
-            UpdateFinalsFixtures();
+                foreach (var fixture in fixtures)
+                {
+                    PlayGame(fixture.Id);
+                    UpdateResult(fixture.Id, game.Season);
+                }
 
-            var nextWeek = game.Week + 1;
-
-            if (nextWeek == 19)
-            {
-                UpdateChampionshipFixture();
+                UpdateDivisionRankings();
+                UpdateScheduleStrength();
             }
             
-            _gameService.NewWeek(nextWeek);
+
+            var nextWeek = game.Week + 1;
+            var nextWeekGameType = game.NextWeekType;
+
+            if (nextWeek > RegularSeasonLength)
+            {
+                UpdateFinalsFixtures();
+                nextWeekGameType = WeekType.DivisionalFinals;
+            }
+
+            _gameService.NewWeek(nextWeek, nextWeekGameType);
         }
 
         private void PlayGame(string fixtureId)
@@ -205,49 +212,6 @@ namespace gmSim_API.ProcessServices
 
                 _fixturesService.UpdateFinals(game.Season, conference, homeTeam, awayTeam);
             }
-        }
-
-        private void UpdateChampionshipFixture()
-        {
-            GameDocument game = _gameService.Get();
-            var winners = new Dictionary<string, string>();
-
-            foreach (var conference in game.Conferences)
-            {
-                var fixture = _fixturesService.GetFinalsFixtures(game.Season, conference);
-
-                if (fixture.HomeScore > fixture.AwayScore)
-                {
-                    winners.Add(conference, fixture.HomeTeamId);
-                }
-                else
-                {
-                    winners.Add(conference, fixture.AwayTeamId);
-                }
-            }
-
-            var scheduleStrength = 0;
-            string homeTeam = "";
-            string awayTeam = "";
-            
-            foreach (var conference in game.Conferences)
-            {
-                winners.TryGetValue(conference, out string finalist);
-                var leader = _standingsService.GetTeamStandings(finalist, game.Season);
-
-                if (leader.ScheduleWeight >= scheduleStrength)
-                {
-                    awayTeam = homeTeam;
-                    homeTeam = leader.TeamId;
-                    scheduleStrength = leader.ScheduleWeight;
-                }
-                else
-                {
-                    awayTeam = leader.TeamId;
-                }
-            }
-            
-            _fixturesService.UpdateChampionship(game.Season, homeTeam, awayTeam);
         }
     }
 }
