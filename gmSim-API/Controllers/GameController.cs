@@ -16,18 +16,21 @@ namespace gmSim_API.Controllers
         private readonly GameService _gameService;
         private readonly NewSeasonProcessService _newSeasonProcessService;
         private readonly DivisionalFinalsProcessService _divisionalFinalsProcessService;
+        private readonly ChampionshipWeekProcessService _championshipWeekProcessService;
         private readonly RegularSeasonWeekProcessService _regularSeasonWeekProcessService;
 
         public GameController(ILogger<GameController> logger, 
             GameService gameService, 
             NewSeasonProcessService newSeasonProcessService, 
             DivisionalFinalsProcessService divisionalFinalsProcessService,
+            ChampionshipWeekProcessService championshipWeekProcessService,
             RegularSeasonWeekProcessService regularSeasonWeekProcessService)
         {
             _logger = logger;
             _gameService = gameService;
             _newSeasonProcessService = newSeasonProcessService;
             _divisionalFinalsProcessService = divisionalFinalsProcessService;
+            _championshipWeekProcessService = championshipWeekProcessService;
             _regularSeasonWeekProcessService = regularSeasonWeekProcessService;
         }
 
@@ -53,6 +56,7 @@ namespace gmSim_API.Controllers
                     _divisionalFinalsProcessService.PlayFinals();
                     break;
                 case WeekType.Championship:
+                    _championshipWeekProcessService.PlayChampionship();
 
                     break;
                 case WeekType.RegularSeason:

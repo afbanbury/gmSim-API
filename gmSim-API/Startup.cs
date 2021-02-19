@@ -45,6 +45,7 @@ namespace gmSim_API
             services.AddSingleton<NewSeasonProcessService>();
             services.AddSingleton<RegularSeasonWeekProcessService>();
             services.AddSingleton<DivisionalFinalsProcessService>();
+            services.AddSingleton<ChampionshipWeekProcessService>();
             services.AddSingleton<GameService>();
             services.AddSingleton<TeamsService>();
             services.AddSingleton<FixturesService>();
